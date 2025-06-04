@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: socialdevs-db
+    environment:
+      POSTGRES_DB: socialdevs
+      POSTGRES_USER: devuser
+      POSTGRES_PASSWORD: 07092006
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
