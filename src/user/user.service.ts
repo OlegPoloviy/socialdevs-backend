@@ -35,14 +35,6 @@ export class UserService {
         }
     }
 
-    async createUser(createUserInput: UserInput): Promise<User> {
-        try {
-            const user = await this.prisma.user.create({ data: createUserInput });
-            return user;
-        } catch (err) {
-            console.error('Error with creating user:', err);
-        }
-    }
 
     async updateUser(id: string,updateUserInput: UpdateUserInput): Promise<User>{
         try{

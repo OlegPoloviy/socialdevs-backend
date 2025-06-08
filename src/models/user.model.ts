@@ -118,3 +118,18 @@ export class UpdateUserInput {
     @Field(() => [String], {nullable: true})
     skills?: string[];
 }
+
+@InputType()
+export class SignInInput {
+    @IsEmail()
+    @Field()
+    email: string;
+
+    @IsString()
+    @Field({nullable: true})
+    username: string;
+
+    @IsString()
+    @Field()
+    password: string;
+}
