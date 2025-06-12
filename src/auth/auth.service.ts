@@ -4,6 +4,7 @@ import { UserInput, SignInInput, User } from '../models/user.model';
 import { JwtService } from '@nestjs/jwt';
 import { AuthJwtPayload } from './auth.jwt';
 import { hash, compare } from "bcrypt"
+import {JwtUser} from "./jwt-user";
 
 export type LoginResponse = {
   id: string;
@@ -72,5 +73,18 @@ export class AuthService {
       email: user.email,
       accessToken,
     }
+  }
+
+  async validateUserJwt(userId: string){
+      const user = await this.prisma.user.findUnique({
+          where: { id: userId },
+      })
+
+      const jwtUser: JwtUser = {
+          id : user.id,
+          email: user.email
+      }
+
+      return jwtUser;
   }
 }
