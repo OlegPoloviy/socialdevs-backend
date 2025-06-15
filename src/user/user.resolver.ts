@@ -1,8 +1,10 @@
-import {Resolver, Query, Args,Mutation} from '@nestjs/graphql';
+import { Resolver, Query, Args, Mutation, Context } from '@nestjs/graphql';
 import {UpdateUserInput, User, UserInput} from "../models/user.model";
 import {UseGuards} from '@nestjs/common';
-import {GqlJwtGuardGuard} from '../auth/guards/gql-jwt-guard/gql-jwt-guard.guard';
+import {GqlJwtGuard} from '../auth/guards/gql-jwt-guard/gql-jwt-guard.guard';
 import {UserService} from "./user.service";
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { JwtUser } from '../auth/jwt-user';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -13,16 +15,19 @@ export class UserResolver {
         return await this.userService.findAllUsers();
     }
 
+    @UseGuards(GqlJwtGuard)
     @Query(() => User, {name: 'getUserById'})
     async findUser(@Args('id') id: string) {
         return this.userService.findUserById(id);
     }
 
 
-    @UseGuards(GqlJwtGuardGuard)
+    @UseGuards(GqlJwtGuard)
     @Mutation(() => User)
-    async updateUser(@Args("id")id: string,  @Args("updateUserInput") updateUserInput: UpdateUserInput){
-        return this.userService.updateUser(id, updateUserInput);
+    async updateUser(@CurrentUser() user: JwtUser,  @Args("updateUserInput") updateUserInput: UpdateUserInput){
+
+        console.log(user);
+        return this.userService.updateUser(user.id, updateUserInput);
 
     }
 
