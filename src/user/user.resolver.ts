@@ -1,5 +1,7 @@
 import {Resolver, Query, Args,Mutation} from '@nestjs/graphql';
 import {UpdateUserInput, User, UserInput} from "../models/user.model";
+import {UseGuards} from '@nestjs/common';
+import {GqlJwtGuardGuard} from '../auth/guards/gql-jwt-guard/gql-jwt-guard.guard';
 import {UserService} from "./user.service";
 
 @Resolver(() => User)
@@ -17,6 +19,7 @@ export class UserResolver {
     }
 
 
+    @UseGuards(GqlJwtGuardGuard)
     @Mutation(() => User)
     async updateUser(@Args("id")id: string,  @Args("updateUserInput") updateUserInput: UpdateUserInput){
         return this.userService.updateUser(id, updateUserInput);

@@ -16,7 +16,7 @@ import * as path from "node:path";
     }),
       GraphQLModule.forRoot<ApolloDriverConfig>({
           driver: ApolloDriver,
-          graphiql: true,
+          graphiql: false,
           autoSchemaFile: true,
           playground: true,
       }),

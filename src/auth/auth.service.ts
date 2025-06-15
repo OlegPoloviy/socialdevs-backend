@@ -12,57 +12,57 @@ export type LoginResponse = {
   accessToken: string;
 }
 
-
-
 @Injectable()
 export class AuthService {
   constructor( private readonly prisma: PrismaService, private readonly  jwtService: JwtService) {}
 
   async registerUser(input: UserInput){
-      const hashedPassword = await hash(input.password, 10);
-      try{
-        const newUser = this.prisma.user.create({
-          data: {...input, password: hashedPassword},
-        })
-        return newUser;
-      }catch(err){
-        console.log(err);
-        throw err;
-      }
+    const hashedPassword = await hash(input.password, 10);
+    try{
+      const newUser = this.prisma.user.create({
+        data: {...input, password: hashedPassword},
+      })
+      return newUser;
+    }catch(err){
+      console.log(err);
+      throw err;
+    }
   }
 
   async validateUser(input: SignInInput){
-      try{
-        const existingUser = await this.prisma.user.findUnique({
-          where: { email: input.email },
-        })
+    try{
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: input.email },
+      })
 
-        if(!existingUser){
-          throw new UnauthorizedException("User don`t exist");
-        }
-
-        const passwordMatch = await compare(input.password,existingUser.password)
-
-        if(!passwordMatch){
-          throw new UnauthorizedException("Invalid password");
-        }
-
-        return existingUser;
-      }catch(err){
-        console.log(err);
-        throw err;
+      if(!existingUser){
+        throw new UnauthorizedException("User don`t exist");
       }
+
+      const passwordMatch = await compare(input.password,existingUser.password)
+
+      if(!passwordMatch){
+        throw new UnauthorizedException("Invalid password");
+      }
+
+      return existingUser;
+    }catch(err){
+      console.log(err);
+      throw err;
+    }
   }
 
   async generateToken(userId: string, email: string){
-      const payload: AuthJwtPayload = {
-        sub: userId,
-        email: email
-      }
+    const payload: AuthJwtPayload = {
+      sub: userId,
+      email: email
+    }
 
-      const accessToken = await this.jwtService.signAsync(payload);
+    console.log('Creating JWT with payload:', payload); // Додаткове логування
 
-      return { accessToken };
+    const accessToken = await this.jwtService.signAsync(payload);
+
+    return { accessToken };
   }
 
   async login(user: User): Promise<LoginResponse> {
@@ -75,16 +75,36 @@ export class AuthService {
     }
   }
 
-  async validateUserJwt(userId: string){
-      const user = await this.prisma.user.findUnique({
-          where: { id: userId },
-      })
+  async validateUserJwt(userId: string): Promise<JwtUser | null> {
+    console.log('Validating JWT user with ID:', userId);
 
-      const jwtUser: JwtUser = {
-          id : user.id,
-          email: user.email
+    if (!userId) {
+      console.log('No userId provided to validateUserJwt');
+      return null;
+    }
+
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: userId },
+      });
+
+      console.log('Found user in database:', user ? 'Yes' : 'No');
+
+      if (!user) {
+        console.log('User not found in database for ID:', userId);
+        return null;
       }
 
+      const jwtUser: JwtUser = {
+        id: user.id,
+        email: user.email
+      };
+
+      console.log('Returning JWT user:', jwtUser);
       return jwtUser;
+    } catch (error) {
+      console.error('Error in validateUserJwt:', error);
+      return null;
+    }
   }
 }
