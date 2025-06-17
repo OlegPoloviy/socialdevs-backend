@@ -126,6 +126,7 @@ export class SignInInput {
     email: string;
 
     @IsString()
+    @IsOptional()
     @Field({nullable: true})
     username: string;
 

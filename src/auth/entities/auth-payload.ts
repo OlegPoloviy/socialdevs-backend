@@ -9,5 +9,8 @@ export class AuthPayload{
   email: string;
 
   @Field()
+  username: string;
+
+  @Field()
   accessToken: string;
  }

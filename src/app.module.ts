@@ -14,6 +14,7 @@ import * as path from "node:path";
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+
       GraphQLModule.forRoot<ApolloDriverConfig>({
           driver: ApolloDriver,
           graphiql: false,

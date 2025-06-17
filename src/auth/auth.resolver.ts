@@ -21,6 +21,7 @@ export class AuthResolver {
 
       return {
         userId: loginResponse.id,
+        username: loginResponse.username,
         email: loginResponse.email,
         accessToken: loginResponse.accessToken,
       };

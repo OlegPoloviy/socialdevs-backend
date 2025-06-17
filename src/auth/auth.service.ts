@@ -9,6 +9,7 @@ import {JwtUser} from "./jwt-user";
 export type LoginResponse = {
   id: string;
   email: string;
+  username: string;
   accessToken: string;
 }
 
@@ -70,6 +71,7 @@ export class AuthService {
 
     return {
       id: user.id,
+      username: user.username,
       email: user.email,
       accessToken,
     }
@@ -97,6 +99,7 @@ export class AuthService {
 
       const jwtUser: JwtUser = {
         id: user.id,
+        username: user.username,
         email: user.email
       };
 
