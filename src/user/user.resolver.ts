@@ -1,5 +1,5 @@
 import { Resolver, Query, Args, Mutation, Context } from '@nestjs/graphql';
-import {UpdateUserInput, User, UserInput} from "../models/user.model";
+import {UpdateUserInput, User, UserInput, InterestsInput} from "../models/user.model";
 import {UseGuards} from '@nestjs/common';
 import {GqlJwtGuard} from '../auth/guards/gql-jwt-guard/gql-jwt-guard.guard';
 import {UserService} from "./user.service";
@@ -26,7 +26,6 @@ export class UserResolver {
     @Mutation(() => User)
     async updateUser(@CurrentUser() user: JwtUser,  @Args("updateUserInput") updateUserInput: UpdateUserInput){
 
-        console.log(user);
         return this.userService.updateUser(user.id, updateUserInput);
 
     }
@@ -34,5 +33,11 @@ export class UserResolver {
     @Mutation(() => User)
     async deleteUser(@Args("id") id: string) {
         return this.userService.deleteUser(id)
+    }
+
+    @UseGuards(GqlJwtGuard)
+    @Mutation(() => User)
+    async addInterests(@CurrentUser() user: JwtUser, @Args("interests") interestsInput: InterestsInput){
+        return this.userService.addUserInterests(user.id, interestsInput.interests);
     }
 }

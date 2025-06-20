@@ -26,8 +26,9 @@ model User {
   twitter_url  String?
   linkedin_url String?
 
-  location String?
-  skills   String[]
+  location  String?
+  skills    String[]
+  interests String[]
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt

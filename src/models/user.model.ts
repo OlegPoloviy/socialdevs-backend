@@ -1,5 +1,5 @@
 import {ObjectType, Field, ID, InputType, PartialType} from '@nestjs/graphql';
-import {IsString, IsEmail, Length, IsOptional} from 'class-validator'
+import { IsString, IsEmail, Length, IsOptional, IsUUID } from 'class-validator';
 
 @ObjectType()
 export class User {
@@ -32,6 +32,9 @@ export class User {
 
     @Field({ nullable: true })
     location?: string;
+
+    @Field(() => [String],{ nullable: true })
+    interests: string[];
 
     @Field(() => [String])
     skills: string[];
@@ -133,4 +136,14 @@ export class SignInInput {
     @IsString()
     @Field()
     password: string;
+}
+
+@InputType()
+export class InterestsInput {
+    @IsUUID()
+    @Field()
+    userId: string;
+
+    @Field(() => [String])
+    interests: string[];
 }

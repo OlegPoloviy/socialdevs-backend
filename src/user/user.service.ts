@@ -57,4 +57,17 @@ export class UserService {
             console.error('Error with deleting user:', err);
         }
     }
+
+    async addUserInterests(userId: string, interests: string[]): Promise<User> {
+        try {
+            const userWithInterests = await this.prisma.user.update({
+                where: { id: userId },
+                data: { interests },
+            });
+            return userWithInterests;
+        } catch (error) {
+            console.error('Error updating user interests:', error);
+            throw new Error('Failed to update user interests');
+        }
+    }
 }
