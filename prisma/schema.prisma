@@ -36,7 +36,120 @@ model User {
   provider    AuthProvider @default(CREDENTIALS)
   provider_id String?
 
+  // Relations
+  posts     Post[]
+  comments  Comment[]
+  likes     Like[]
+  bookmarks Bookmark[]
+
   @@index([username])
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  title     String?
+  content   String
+  author_id String
+  type      PostType @default(TEXT)
+
+  // Code-specific fields
+  code_snippet String?
+  language     String?
+  github_repo  String?
+  demo_url     String?
+
+  // Post metadata
+  tags        String[]
+  difficulty  DifficultyLevel?
+  is_question Boolean          @default(false)
+  is_showcase Boolean          @default(false)
+  is_tutorial Boolean          @default(false)
+  is_solved   Boolean          @default(false) // for questions
+
+  // Engagement
+  likes_count     Int @default(0)
+  comments_count  Int @default(0)
+  views_count     Int @default(0)
+  bookmarks_count Int @default(0)
+
+  // Timestamps
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  author    User       @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  comments  Comment[]
+  likes     Like[]
+  bookmarks Bookmark[]
+
+  @@index([author_id])
+  @@index([type])
+  @@index([created_at])
+  @@index([tags])
+  @@index([language])
+}
+
+model Comment {
+  id      String @id @default(uuid())
+  content String
+
+  author_id String
+  post_id   String
+  parent_id String? // for nested comments
+
+  // Code-specific
+  code_snippet String?
+  language     String?
+
+  // Engagement
+  likes_count Int @default(0)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  author  User      @relation(fields: [author_id], references: [id], onDelete: Cascade)
+  post    Post      @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parent_id], references: [id])
+  replies Comment[] @relation("CommentReplies")
+  likes   Like[]
+
+  @@index([post_id])
+  @@index([author_id])
+  @@index([parent_id])
+}
+
+model Like {
+  id String @id @default(uuid())
+
+  user_id    String
+  post_id    String?
+  comment_id String?
+
+  created_at DateTime @default(now())
+
+  user    User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  post    Post?    @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  comment Comment? @relation(fields: [comment_id], references: [id], onDelete: Cascade)
+
+  // Ensure user can't like the same post/comment twice
+  @@unique([user_id, post_id])
+  @@unique([user_id, comment_id])
+}
+
+model Bookmark {
+  id String @id @default(uuid())
+
+  user_id String
+  post_id String
+
+  created_at DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, post_id])
 }
 
 enum AuthProvider {
@@ -44,4 +157,21 @@ enum AuthProvider {
   GITHUB
   GOOGLE
   DISCORD
+}
+
+enum PostType {
+  TEXT
+  CODE_SNIPPET
+  TUTORIAL
+  QUESTION
+  SHOWCASE
+  DISCUSSION
+  RESOURCE_SHARE
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
 }

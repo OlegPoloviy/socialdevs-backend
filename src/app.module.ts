@@ -7,7 +7,8 @@ import { UserModule } from './user/user.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
-import * as path from "node:path";
+import {MailerModule} from '@nestjs-modules/mailer';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import * as path from "node:path";
       }),
       UserModule,
       PrismaModule,
-      AuthModule
+      AuthModule,
+      PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

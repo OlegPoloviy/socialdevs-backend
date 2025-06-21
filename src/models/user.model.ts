@@ -1,5 +1,11 @@
-import {ObjectType, Field, ID, InputType, PartialType} from '@nestjs/graphql';
+import {ObjectType, Field, ID, InputType, PartialType, registerEnumType} from '@nestjs/graphql';
 import { IsString, IsEmail, Length, IsOptional, IsUUID } from 'class-validator';
+import {AuthProvider} from './enums/user.enum';
+import { Post } from './post.model';
+
+registerEnumType(AuthProvider, {
+    name: 'AuthProvider',
+})
 
 @ObjectType()
 export class User {
@@ -44,6 +50,23 @@ export class User {
 
     @Field()
     updated_at: Date;
+
+    @Field(() => AuthProvider)
+    provider: AuthProvider;
+
+    //relations
+    @Field(() => [Post])
+    posts: Post[];
+
+    @Field(() => [Comment])
+    comments: Comment[];
+
+    @Field(() => [Like])
+    likes: Like[];
+
+    @Field(() => [Bookmark])
+    bookmarks: Bookmark[];
+
 }
 
 @InputType()
