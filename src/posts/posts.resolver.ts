@@ -1,4 +1,19 @@
-import { Resolver } from '@nestjs/graphql';
+import { Resolver, Mutation, Args } from '@nestjs/graphql';
+import {PostsService} from './posts.service';
+import {UseGuards} from '@nestjs/common';
+import {GqlJwtGuard} from '../auth/guards/gql-jwt-guard/gql-jwt-guard.guard';
+import {CurrentUser} from '../auth/decorators/current-user.decorator';
+import { CreatePostInput, Post } from '../models/post.model';
+import {JwtUser} from '../auth/jwt-user';
 
 @Resolver()
-export class PostsResolver {}
+export class PostsResolver {
+
+  constructor(private postsService: PostsService) {}
+
+  @UseGuards(GqlJwtGuard)
+  @Mutation(() => Post)
+  async createPost(@CurrentUser() user: JwtUser,@Args('postInput') input: CreatePostInput) {
+    return this.postsService.createPost(user?.id, input)
+  }
+}

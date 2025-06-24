@@ -1,7 +1,7 @@
 import {ObjectType, Field, ID, InputType, PartialType, registerEnumType} from '@nestjs/graphql';
 import { IsString, IsEmail, Length, IsOptional, IsUUID } from 'class-validator';
 import {AuthProvider} from './enums/user.enum';
-import { Post } from './post.model';
+import { Post, Like , Comment , Bookmark } from './post.model';
 
 registerEnumType(AuthProvider, {
     name: 'AuthProvider',

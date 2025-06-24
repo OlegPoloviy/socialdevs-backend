@@ -1,4 +1,4 @@
-import { ObjectType, Field, registerEnumType, ID, Int} from '@nestjs/graphql';
+import { ObjectType, Field, registerEnumType, ID, Int, InputType } from '@nestjs/graphql';
 import {PostType, DifficultyLevel} from "./enums/post.enum"
 import {User} from './user.model';
 
@@ -25,7 +25,7 @@ export class Post{
   author_id: string;
 
   @Field(() => PostType)
-  postType: PostType;
+  type: PostType;
 
   @Field({nullable: true})
   code_snippet: string;
@@ -93,5 +93,158 @@ export class Post{
 
 @ObjectType()
 export class Comment {
+  @Field(() => ID)
+  id: string;
 
+  @Field()
+  content: string;
+
+  @Field(() => ID)
+  author_id: string;
+
+  @Field(() => ID)
+  post_id: string;
+
+  @Field(() => ID, { nullable: true })
+  parent_id?: string;
+
+  // Code-specific
+  @Field({ nullable: true })
+  code_snippet?: string;
+
+  @Field({ nullable: true })
+  language?: string;
+
+  // Engagement
+  @Field(() => Int)
+  likes_count: number;
+
+  @Field()
+  created_at: Date;
+
+  @Field()
+  updated_at: Date;
+
+  // Relations
+  @Field(() => User)
+  author: User;
+
+  @Field(() => Post)
+  post: Post;
+
+  @Field(() => Comment, { nullable: true })
+  parent?: Comment;
+
+  @Field(() => [Comment])
+  replies: Comment[];
+
+  @Field(() => [Like])
+  likes: Like[];
+}
+
+@ObjectType()
+export class Like {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => ID)
+  user_id: string;
+
+  @Field(() => ID, { nullable: true })
+  post_id?: string;
+
+  @Field(() => ID, { nullable: true })
+  comment_id?: string;
+
+  @Field()
+  created_at: Date;
+
+  // Relations
+  @Field(() => User)
+  user: User;
+
+  @Field(() => Post, { nullable: true })
+  post?: Post;
+
+  @Field(() => Comment, { nullable: true })
+  comment?: Comment;
+}
+
+@ObjectType()
+export class Bookmark {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => ID)
+  user_id: string;
+
+  @Field(() => ID)
+  post_id: string;
+
+  @Field()
+  created_at: Date;
+
+  // Relations
+  @Field(() => User)
+  user: User;
+
+  @Field(() => Post)
+  post: Post;
+}
+
+@InputType()
+export class CreatePostInput {
+  @Field({nullable: true})
+  title: string;
+
+  @Field()
+  content: string;
+
+  @Field(() => PostType)
+  type: PostType;
+
+  @Field({nullable: true})
+  code_snippet: string;
+
+  @Field({nullable: true})
+  language: string;
+
+  @Field({ nullable: true })
+  github_repo?: string;
+
+  @Field({ nullable: true })
+  demo_url?: string;
+
+  @Field(() => [String])
+  tags: string[];
+
+  @Field(() => DifficultyLevel, { nullable: true })
+  difficulty?: DifficultyLevel;
+
+  @Field()
+  is_question: boolean;
+
+  @Field()
+  is_showcase: boolean;
+
+  @Field()
+  is_tutorial: boolean;
+}
+
+@InputType()
+export class CreateCommentInput {
+  @Field()
+  content: string;
+
+  @Field(() => ID)
+  post_id: string;
+
+  @Field(() => ID, { nullable: true })
+  parent_id?: string;
+
+  @Field({ nullable: true })
+  code_snippet?: string;
+
+  @Field({ nullable: true })
+  language?: string;
 }
