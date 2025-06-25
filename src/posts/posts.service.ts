@@ -69,5 +69,32 @@ export class PostsService {
     }
   }
 
-
+  async getPosts(): Promise<PostWithRelations[]> {
+      try{
+        const posts = await this.prisma.post.findMany({
+          include: {
+            author: true,
+            comments: {
+              include: {
+                author: true,
+                likes: true,
+                replies: true
+              }
+            },
+            likes: {
+              include: {
+                user: true
+              }
+            },
+            bookmarks: {
+              include: {
+                user: true
+              }
+            }
+          }});
+        return posts;
+      }catch(err){
+        throw err;
+      }
+  }
 }

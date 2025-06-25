@@ -18,7 +18,7 @@ import { PostsModule } from './posts/posts.module';
 
       GraphQLModule.forRoot<ApolloDriverConfig>({
           driver: ApolloDriver,
-          graphiql: false,
+          graphiql: true,
           autoSchemaFile: true,
           playground: true,
       }),
