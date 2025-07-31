@@ -1,13 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import {PrismaService} from '../prisma/prisma.service';
-import { CreatePostInput} from '../models/post.model';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreatePostInput } from '../models/post.model';
 import { PostWithRelations } from '../types/prisma.types';
 
 @Injectable()
 export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createPost(userId: string, postInput: CreatePostInput): Promise<PostWithRelations> {
+  async createPost(
+    userId: string,
+    postInput: CreatePostInput,
+  ): Promise<PostWithRelations> {
     try {
       const {
         title,
@@ -21,7 +24,7 @@ export class PostsService {
         difficulty,
         is_question,
         is_tutorial,
-        is_showcase
+        is_showcase,
       } = postInput;
 
       const createdPost = await this.prisma.post.create({
@@ -38,7 +41,7 @@ export class PostsService {
           difficulty,
           is_question,
           is_tutorial,
-          is_showcase
+          is_showcase,
         },
         // Include relations для GraphQL типу
         include: {
@@ -47,20 +50,20 @@ export class PostsService {
             include: {
               author: true,
               likes: true,
-              replies: true
-            }
+              replies: true,
+            },
           },
           likes: {
             include: {
-              user: true
-            }
+              user: true,
+            },
           },
           bookmarks: {
             include: {
-              user: true
-            }
-          }
-        }
+              user: true,
+            },
+          },
+        },
       });
 
       return createdPost;
@@ -70,31 +73,32 @@ export class PostsService {
   }
 
   async getPosts(): Promise<PostWithRelations[]> {
-      try{
-        const posts = await this.prisma.post.findMany({
-          include: {
-            author: true,
-            comments: {
-              include: {
-                author: true,
-                likes: true,
-                replies: true
-              }
+    try {
+      const posts = await this.prisma.post.findMany({
+        include: {
+          author: true,
+          comments: {
+            include: {
+              author: true,
+              likes: true,
+              replies: true,
             },
-            likes: {
-              include: {
-                user: true
-              }
+          },
+          likes: {
+            include: {
+              user: true,
             },
-            bookmarks: {
-              include: {
-                user: true
-              }
-            }
-          }});
-        return posts;
-      }catch(err){
-        throw err;
-      }
+          },
+          bookmarks: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+      return posts;
+    } catch (err) {
+      throw err;
+    }
   }
 }
