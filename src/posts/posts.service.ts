@@ -15,6 +15,7 @@ export class PostsService {
       const {
         title,
         content,
+        image_urls,
         type,
         code_snippet,
         language,
@@ -32,6 +33,7 @@ export class PostsService {
           author_id: userId,
           title,
           content,
+          image_urls,
           type,
           code_snippet,
           language,

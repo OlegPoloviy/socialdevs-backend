@@ -51,6 +51,7 @@ model Post {
   content   String
   author_id String
   type      PostType @default(TEXT)
+  image_urls String[] @default([])
 
   // Code-specific fields
   code_snippet String?

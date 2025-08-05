@@ -1,17 +1,24 @@
-import { ObjectType, Field, registerEnumType, ID, Int, InputType } from '@nestjs/graphql';
-import {PostType, DifficultyLevel} from "./enums/post.enum"
-import {User} from './user.model';
+import {
+  ObjectType,
+  Field,
+  registerEnumType,
+  ID,
+  Int,
+  InputType,
+} from '@nestjs/graphql';
+import { PostType, DifficultyLevel } from './enums/post.enum';
+import { User } from './user.model';
 
 registerEnumType(PostType, {
   name: 'PostType',
-})
+});
 
 registerEnumType(DifficultyLevel, {
   name: 'DifficultyLevel',
-})
+});
 
 @ObjectType()
-export class Post{
+export class Post {
   @Field(() => ID)
   id: string;
 
@@ -24,10 +31,13 @@ export class Post{
   @Field(() => ID)
   author_id: string;
 
+  @Field(() => [String], { nullable: true })
+  image_urls: string[];
+
   @Field(() => PostType)
   type: PostType;
 
-  @Field({nullable: true})
+  @Field({ nullable: true })
   code_snippet: string;
 
   @Field()
@@ -194,19 +204,22 @@ export class Bookmark {
 
 @InputType()
 export class CreatePostInput {
-  @Field({nullable: true})
+  @Field({ nullable: true })
   title: string;
 
   @Field()
   content: string;
 
+  @Field(() => [String], { nullable: true })
+  image_urls: string[];
+
   @Field(() => PostType)
   type: PostType;
 
-  @Field({nullable: true})
+  @Field({ nullable: true })
   code_snippet: string;
 
-  @Field({nullable: true})
+  @Field({ nullable: true })
   language: string;
 
   @Field({ nullable: true })

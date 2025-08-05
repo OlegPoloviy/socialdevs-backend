@@ -11,7 +11,9 @@ export type LoginResponse = {
   id: string;
   email: string;
   username: string;
+  avatar_url?: string;
   accessToken: string;
+  expiresAt?: string;
 };
 
 @Injectable()
@@ -79,27 +81,39 @@ export class AuthService {
     }
   }
 
-  async generateToken(userId: string, email: string) {
+  async generateToken(userId: string, email: string, avatar_url?: string) {
     const payload: AuthJwtPayload = {
       sub: userId,
       email: email,
+      avatar_url: avatar_url,
     };
 
-    console.log('Creating JWT with payload:', payload); // Додаткове логування
+    console.log('Creating JWT with payload:', payload);
 
-    const accessToken = await this.jwtService.signAsync(payload);
+    const expiresIn = '24h';
+    const accessToken = await this.jwtService.signAsync(payload, {
+      expiresIn: expiresIn,
+    });
 
-    return { accessToken };
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+    return { accessToken, expiresAt };
   }
 
   async login(user: User): Promise<LoginResponse> {
-    const { accessToken } = await this.generateToken(user.id, user.email);
+    const { accessToken, expiresAt } = await this.generateToken(
+      user.id,
+      user.email,
+      user.avatar_url,
+    );
 
     return {
       id: user.id,
       username: user.username,
       email: user.email,
+      avatar_url: user.avatar_url,
       accessToken,
+      expiresAt,
     };
   }
 
@@ -127,6 +141,7 @@ export class AuthService {
         id: user.id,
         username: user.username,
         email: user.email,
+        avatar_url: user.avatar_url,
       };
 
       console.log('Returning JWT user:', jwtUser);
