@@ -1,15 +1,28 @@
 version: '3.8'
 
 services:
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: socialdevs-app
+  #   ports:
+  #     - '3001:3000'
+  #   depends_on:
+  #     - db
+  #   environment:
+  #     DATABASE_URL: postgres://devuser:07092006@db:5432/socialdevs
+  #   restart: unless-stopped
+
   db:
     image: postgres:16
     container_name: socialdevs-db
     environment:
       POSTGRES_DB: socialdevs
       POSTGRES_USER: devuser
-      POSTGRES_PASSWORD: 07092006
+      POSTGRES_PASSWORD: '07092006'
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     restart: unless-stopped

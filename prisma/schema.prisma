@@ -124,7 +124,7 @@ model Like {
   id String @id @default(uuid())
 
   user_id    String
-  post_id    String?
+  post_id    String
   comment_id String?
 
   created_at DateTime @default(now())

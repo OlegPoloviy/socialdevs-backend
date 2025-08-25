@@ -261,3 +261,12 @@ export class CreateCommentInput {
   @Field({ nullable: true })
   language?: string;
 }
+
+@ObjectType()
+export class LikeResponse {
+  @Field(() => Int)
+  likes_count: number;
+
+  @Field({ nullable: true })
+  liked: boolean;
+}

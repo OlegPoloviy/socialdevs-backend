@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreatePostInput } from '../models/post.model';
+import { CreatePostInput, LikeResponse } from '../models/post.model';
 import { PostWithRelations } from '../types/prisma.types';
 
 @Injectable()
@@ -101,6 +101,80 @@ export class PostsService {
       return posts;
     } catch (err) {
       throw err;
+    }
+  }
+
+  async getPostById(postId: string): Promise<PostWithRelations> {
+    try {
+      const post = await this.prisma.post.findUnique({
+        where: { id: postId },
+        include: {
+          author: true,
+          comments: {
+            include: {
+              author: true,
+              likes: true,
+              replies: true,
+            },
+          },
+          likes: {
+            include: {
+              user: true,
+            },
+          },
+          bookmarks: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      });
+
+      return {
+        ...post,
+        likes: post.likes ?? [],
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async toggleLikePost(postId: string, userId: string): Promise<LikeResponse> {
+    try {
+      const existingLike = await this.prisma.like.findUnique({
+        where: {
+          user_id_post_id: {
+            user_id: userId,
+            post_id: postId,
+          },
+        },
+      });
+
+      let post;
+
+      if (existingLike) {
+        await this.prisma.like.delete({ where: { id: existingLike.id } });
+        post = await this.prisma.post.update({
+          where: { id: postId },
+          data: { likes_count: { decrement: 1 } },
+          select: { likes_count: true },
+        });
+      } else {
+        await this.prisma.like.create({
+          data: { user_id: userId, post_id: postId },
+        });
+        post = await this.prisma.post.update({
+          where: { id: postId },
+          data: { likes_count: { increment: 1 } },
+          select: { likes_count: true },
+        });
+      }
+
+      const isLiked = !existingLike;
+
+      return { likes_count: post.likes_count, liked: isLiked };
+    } catch (error) {
+      throw error;
     }
   }
 }
