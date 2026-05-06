@@ -1,7 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class AuthPayload{
+export class AuthPayload {
   @Field()
   userId: string;
 
@@ -11,6 +11,12 @@ export class AuthPayload{
   @Field()
   username: string;
 
+  @Field({ nullable: true })
+  avatar_url?: string;
+
   @Field()
   accessToken: string;
- }
+
+  @Field({ nullable: true })
+  expiresAt?: string;
+}

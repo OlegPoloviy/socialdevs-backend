@@ -27,8 +27,8 @@ model User {
   linkedin_url String?
 
   location  String?
-  skills    String[]
-  interests String[]
+  skills    String[] @default([])
+  interests String[] @default([])
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -41,16 +41,23 @@ model User {
   comments  Comment[]
   likes     Like[]
   bookmarks Bookmark[]
+  reposts   Repost[]
+  following Follow[] @relation("UserFollowing")
+  followers Follow[] @relation("UserFollowers")
+
+  followers_count Int @default(0)
+  following_count Int @default(0)
 
   @@index([username])
 }
 
 model Post {
-  id        String   @id @default(uuid())
-  title     String?
-  content   String
-  author_id String
-  type      PostType @default(TEXT)
+  id         String   @id @default(uuid())
+  title      String?
+  content    String
+  author_id  String
+  type       PostType @default(TEXT)
+  image_urls String[] @default([])
 
   // Code-specific fields
   code_snippet String?
@@ -71,6 +78,7 @@ model Post {
   comments_count  Int @default(0)
   views_count     Int @default(0)
   bookmarks_count Int @default(0)
+  reposts_count   Int @default(0)
 
   // Timestamps
   created_at DateTime @default(now())
@@ -81,6 +89,7 @@ model Post {
   comments  Comment[]
   likes     Like[]
   bookmarks Bookmark[]
+  reposts   Repost[]
 
   @@index([author_id])
   @@index([type])
@@ -150,6 +159,38 @@ model Bookmark {
   post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
 
   @@unique([user_id, post_id])
+}
+
+model Repost {
+  id String @id @default(uuid())
+
+  user_id String
+  post_id String
+
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  post Post @relation(fields: [post_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, post_id])
+  @@index([post_id])
+  @@index([user_id])
+}
+
+model Follow {
+  id String @id @default(uuid())
+
+  follower_id  String
+  following_id String
+
+  created_at DateTime @default(now())
+
+  follower  User @relation("UserFollowing", fields: [follower_id], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowers", fields: [following_id], references: [id], onDelete: Cascade)
+
+  @@unique([follower_id, following_id])
+  @@index([follower_id])
+  @@index([following_id])
 }
 
 enum AuthProvider {

@@ -3,7 +3,8 @@ import {
   User as PrismaUser,
   Comment as PrismaComment,
   Like as PrismaLike,
-  Bookmark as PrismaBookmark
+  Bookmark as PrismaBookmark,
+  Repost as PrismaRepost,
 } from '@prisma/client';
 
 // Типи з partial relations для використання в сервісах
@@ -24,6 +25,9 @@ export type PostWithRelations = PrismaPost & {
     user: UserWithBasicInfo;
   })[];
   bookmarks: (PrismaBookmark & {
+    user: UserWithBasicInfo;
+  })[];
+  reposts: (PrismaRepost & {
     user: UserWithBasicInfo;
   })[];
 };

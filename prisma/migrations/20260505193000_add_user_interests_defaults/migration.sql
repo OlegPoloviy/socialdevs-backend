@@ -1,0 +1,15 @@
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "interests" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+
+UPDATE "User"
+SET "skills" = ARRAY[]::TEXT[]
+WHERE "skills" IS NULL;
+
+UPDATE "User"
+SET "interests" = ARRAY[]::TEXT[]
+WHERE "interests" IS NULL;
+
+ALTER TABLE "User"
+  ALTER COLUMN "skills" SET DEFAULT ARRAY[]::TEXT[],
+  ALTER COLUMN "skills" SET NOT NULL,
+  ALTER COLUMN "interests" SET DEFAULT ARRAY[]::TEXT[],
+  ALTER COLUMN "interests" SET NOT NULL;

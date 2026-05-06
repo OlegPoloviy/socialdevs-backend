@@ -1,17 +1,24 @@
-import { ObjectType, Field, registerEnumType, ID, Int, InputType } from '@nestjs/graphql';
-import {PostType, DifficultyLevel} from "./enums/post.enum"
-import {User} from './user.model';
+import {
+  ObjectType,
+  Field,
+  registerEnumType,
+  ID,
+  Int,
+  InputType,
+} from '@nestjs/graphql';
+import { PostType, DifficultyLevel } from './enums/post.enum';
+import { User } from './user.model';
 
 registerEnumType(PostType, {
   name: 'PostType',
-})
+});
 
 registerEnumType(DifficultyLevel, {
   name: 'DifficultyLevel',
-})
+});
 
 @ObjectType()
-export class Post{
+export class Post {
   @Field(() => ID)
   id: string;
 
@@ -24,10 +31,13 @@ export class Post{
   @Field(() => ID)
   author_id: string;
 
+  @Field(() => [String], { nullable: true })
+  image_urls: string[];
+
   @Field(() => PostType)
   type: PostType;
 
-  @Field({nullable: true})
+  @Field({ nullable: true })
   code_snippet: string;
 
   @Field()
@@ -70,6 +80,9 @@ export class Post{
   @Field(() => Int)
   bookmarks_count: number;
 
+  @Field(() => Int)
+  reposts_count: number;
+
   // Timestamps
   @Field()
   created_at: Date;
@@ -89,6 +102,9 @@ export class Post{
 
   @Field(() => [Bookmark])
   bookmarks: Bookmark[];
+
+  @Field(() => [Repost])
+  reposts: Repost[];
 }
 
 @ObjectType()
@@ -192,21 +208,45 @@ export class Bookmark {
   post: Post;
 }
 
+@ObjectType()
+export class Repost {
+  @Field(() => ID)
+  id: string;
+
+  @Field(() => ID)
+  user_id: string;
+
+  @Field(() => ID)
+  post_id: string;
+
+  @Field()
+  created_at: Date;
+
+  @Field(() => User)
+  user: User;
+
+  @Field(() => Post)
+  post: Post;
+}
+
 @InputType()
 export class CreatePostInput {
-  @Field({nullable: true})
+  @Field({ nullable: true })
   title: string;
 
   @Field()
   content: string;
 
+  @Field(() => [String], { nullable: true })
+  image_urls: string[];
+
   @Field(() => PostType)
   type: PostType;
 
-  @Field({nullable: true})
+  @Field({ nullable: true })
   code_snippet: string;
 
-  @Field({nullable: true})
+  @Field({ nullable: true })
   language: string;
 
   @Field({ nullable: true })
@@ -247,4 +287,40 @@ export class CreateCommentInput {
 
   @Field({ nullable: true })
   language?: string;
+}
+
+@ObjectType()
+export class LikeResponse {
+  @Field(() => Int)
+  likes_count: number;
+
+  @Field({ nullable: true })
+  liked: boolean;
+}
+
+@ObjectType()
+export class CommentLikeResponse {
+  @Field(() => Int)
+  likes_count: number;
+
+  @Field()
+  liked: boolean;
+}
+
+@ObjectType()
+export class BookmarkResponse {
+  @Field(() => Int)
+  bookmarks_count: number;
+
+  @Field()
+  bookmarked: boolean;
+}
+
+@ObjectType()
+export class RepostResponse {
+  @Field(() => Int)
+  reposts_count: number;
+
+  @Field()
+  reposted: boolean;
 }

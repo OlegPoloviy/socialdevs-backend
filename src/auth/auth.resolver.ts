@@ -23,7 +23,9 @@ export class AuthResolver {
         userId: loginResponse.id,
         username: loginResponse.username,
         email: loginResponse.email,
+        avatar_url: loginResponse.avatar_url,
         accessToken: loginResponse.accessToken,
+        expiresAt: loginResponse.expiresAt,
       };
     } catch (error) {
       throw error;
